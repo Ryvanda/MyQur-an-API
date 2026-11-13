@@ -1,4 +1,4 @@
-export default function AyahCard({ ayah }) {
+﻿export default function AyahCard({ ayah }) {
   return (
     <article className="ayah-card">
       <div className="ayah-heading">

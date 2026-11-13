@@ -1,4 +1,4 @@
-import { fetchJson } from './api'
+﻿import { fetchJson } from './api'
 
 export async function getSurahs(signal) {
   const response = await fetchJson('/quran', signal)

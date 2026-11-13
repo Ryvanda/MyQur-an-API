@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import AyahCard from '../components/AyahCard'
 import Loading from '../components/Loading'
 import { getSurahDetail } from '../services/detailService'

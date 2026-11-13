@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://api.myquran.com/v3'
+﻿export const API_BASE_URL = 'https://api.myquran.com/v3'
 
 export async function fetchJson(path, signal) {
   const response = await fetch(`${API_BASE_URL}${path}`, { signal })
