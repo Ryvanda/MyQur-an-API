@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "cots-1",
   "private": true,
   "version": "0.0.0",
@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.21.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

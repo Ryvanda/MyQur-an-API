@@ -15,7 +15,7 @@ export default function SurahCard({ surah }) {
           <span>{surah.revelation}</span>
         </div>
       </div>
-      <div className="surah-arabic" lang="ar">{surah.name}</div>
+      <div className="surah-arabic">{surah.name}</div>
       {surah.audio_url && <audio controls src={surah.audio_url} onClick={(event) => event.stopPropagation()} aria-label={`Audio ${surah.name_latin}`} />}
     </article>
   )

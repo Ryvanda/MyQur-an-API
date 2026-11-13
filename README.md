@@ -1,4 +1,4 @@
-﻿Aplikasi React sederhana untuk membaca daftar surah dan ayat Al-Qur'an
+Aplikasi React sederhana untuk membaca daftar surah dan ayat Al-Qur'an
 dengan terjemahan Bahasa Indonesia.
 
 ## Fitur
@@ -46,4 +46,3 @@ surah dan ayat serta navigasi ke surah sebelumnya atau berikutnya. Komponen
 `Navbar`, `SearchBar`, dan `Loading` membantu menampilkan navigasi, pencarian,
 dan status pemuatan data, sedangkan `index.css` mengatur tampilan sederhana
 berwarna hitam putih.
-

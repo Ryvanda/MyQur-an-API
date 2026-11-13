@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import AyahCard from '../components/AyahCard'
 import Loading from '../components/Loading'
 import { getSurahDetail } from '../services/detailService'
@@ -19,30 +19,60 @@ export default function DetailPage({ number, onNavigate }) {
       const response = await getSurahDetail(number, page, 100, signal)
       setDetail(response.data)
       setPagination(response.pagination)
-      setAyahs((current) => append ? [...current, ...response.data.ayahs] : response.data.ayahs)
+      setAyahs((current) => (append ? [...current, ...response.data.ayahs] : response.data.ayahs))
     } catch (requestError) {
-      if (requestError.name !== 'AbortError') setError(requestError.message)
+      if (requestError.name !== 'CanceledError' && requestError.name !== 'AbortError') {
+        setError(requestError.message)
+      }
     } finally {
-      setLoading(false)
-      setLoadingMore(false)
+      if (!signal?.aborted) {
+        setLoading(false)
+        setLoadingMore(false)
+      }
     }
   }
 
   useEffect(() => {
     const controller = new AbortController()
-    setDetail(null)
-    setAyahs([])
-    loadPage(1, false, controller.signal)
+
+    getSurahDetail(number, 1, 100, controller.signal)
+      .then((response) => {
+        setDetail(response.data)
+        setPagination(response.pagination)
+        setAyahs(response.data.ayahs)
+        setError('')
+      })
+      .catch((requestError) => {
+        if (requestError.name !== 'CanceledError' && requestError.name !== 'AbortError') {
+          setError(requestError.message)
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
+      })
+
     return () => controller.abort()
   }, [number])
 
   const go = (target) => {
-    window.history.pushState({}, '', `/surah/${target}`)
-    window.dispatchEvent(new PopStateEvent('popstate'))
+    onNavigate(`/surah/${target}`)
   }
 
   if (loading) return <main className="container"><Loading label="Memuat surah..." /></main>
-  if (error) return <main className="container"><div className="error-state"><strong>Surah tidak dapat dimuat</strong><p>{error}</p><button className="button" onClick={() => loadPage(1)}>Coba lagi</button></div></main>
+  if (error) {
+    return (
+      <main className="container detail-page">
+        <button className="back-link" onClick={() => onNavigate('/')}>← Kembali ke daftar surah</button>
+        <div className="error-state" role="alert">
+          <strong>Surah tidak dapat dimuat</strong>
+          <p>{error}</p>
+          <button className="button" onClick={() => loadPage(1)}>Coba lagi</button>
+        </div>
+      </main>
+    )
+  }
   if (!detail) return null
 
   const hasMore = pagination && ayahs.length < pagination.total
@@ -56,12 +86,16 @@ export default function DetailPage({ number, onNavigate }) {
           <p className="detail-translation">{detail.translation} · {detail.revelation}</p>
           <p className="detail-stats">{detail.number_of_ayahs} ayat</p>
         </div>
-        <div className="detail-arabic" lang="ar">{detail.name}</div>
+        <div className="detail-arabic">{detail.name}</div>
         {detail.audio_url && <audio controls src={detail.audio_url} aria-label={`Audio ${detail.name_latin}`} />}
       </header>
       {detail.description && <p className="description">{detail.description}</p>}
       <div className="ayah-list">{ayahs.map((ayah) => <AyahCard key={ayah.id || ayah.ayah_number} ayah={ayah} />)}</div>
-      {hasMore && <button className="button load-more" disabled={loadingMore} onClick={() => loadPage(pagination.page + 1, true)}>{loadingMore ? 'Memuat...' : 'Muat lebih banyak ayat'}</button>}
+      {hasMore && (
+        <button className="button load-more" disabled={loadingMore} onClick={() => loadPage(pagination.page + 1, true)}>
+          {loadingMore ? 'Memuat...' : 'Muat lebih banyak ayat'}
+        </button>
+      )}
       <nav className="surah-navigation" aria-label="Navigasi surah">
         <button disabled={number === 1} onClick={() => go(number - 1)}>← <span>Surah sebelumnya</span></button>
         <button disabled={number === 114} onClick={() => go(number + 1)}><span>Surah berikutnya</span> →</button>
